@@ -1,5 +1,7 @@
 = RxCurator
 
+image:https://travis-ci.org/reiseburo/rx-curator.svg?branch=master["Build Status", link="https://travis-ci.org/reiseburo/rx-curator"]
+
 NOTE: Consider this code beta quality until further notice
 
 RxCurator is intended to be a small reactive wrapper on top of the phenomenal
