@@ -1,8 +1,11 @@
 package com.github.reiseburo.rx.curator;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import rx.Observable;
+import rx.Subscriber;
 
 /**
  * PathChildren is an {@code Observable} which takes events from a {@code PathChildrenCache}
@@ -10,6 +13,10 @@ import rx.Observable;
  */
 public class PathChildren {
     protected CuratorFramework curatorFramework;
+    protected PathChildrenCache cache;
+
+    protected PathChildren() {
+    }
 
     public CuratorFramework getCuratorFramework() {
         return curatorFramework;
@@ -35,7 +42,25 @@ public class PathChildren {
     }
 
 
-    public Observable<PathChildrenCacheEvent> watch(String znodePath) {
-        return Observable.never();
+    public Observable<PathChildrenCacheEvent> watch(final String znodePath) {
+        return Observable.create(new Observable.OnSubscribe<PathChildrenCacheEvent>() {
+            @Override
+            public void call(final Subscriber<? super PathChildrenCacheEvent> subscriber) {
+                cache = new PathChildrenCache(curatorFramework, znodePath, true);
+                try {
+                    cache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+                }
+                catch (Exception ex) {
+                    subscriber.onError(ex);
+                }
+
+                cache.getListenable().addListener(new PathChildrenCacheListener() {
+                    @Override
+                    public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+                        subscriber.onNext(event);
+                    }
+                });
+            }
+        });
     }
 }
