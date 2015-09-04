@@ -18,6 +18,7 @@ dependencies {
     }
     compile 'io.reactivex:rxjava:[1.0.14,2.0)'
 
+    testCompile 'org.apache.curator:curator-test:[2.7.1,2.8)'
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testCompile 'cglib:cglib-nodep:3.1'
 }
@@ -36,5 +37,41 @@ test {
     }
 }
 
-assemble.dependsOn check
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    dependsOn classes
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    dependsOn javadoc
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+
+assemble.dependsOn check, javadocJar, sourcesJar
 install.dependsOn assemble
+
+
+
+plugins.withType(JavaPlugin) {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+
+
+    project.tasks.withType(JavaCompile) { task ->
+        task.sourceCompatibility = project.sourceCompatibility
+        task.targetCompatibility = project.targetCompatibility
+    }
+
+    project.tasks.withType(GroovyCompile) { task ->
+        task.sourceCompatibility = project.sourceCompatibility
+        task.targetCompatibility = project.targetCompatibility
+    }
+}
