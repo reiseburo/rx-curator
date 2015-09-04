@@ -58,12 +58,14 @@ class PathChildrenIntegrationSpec extends Specification {
     def "an initialization event should be received"() {
         given:
         boolean received = false
+        Subscription subscription
         Observable<PathChildrenCacheEvent> observable = PathChildren.with(curator).watch('/')
 
         when:
-        observable.subscribe { PathChildrenCacheEvent ev ->
+        subscription = observable.subscribe { PathChildrenCacheEvent ev ->
             if (ev.type == PathChildrenCacheEvent.Type.INITIALIZED) {
                 received = true
+                subscription.unsubscribe()
             }
         }
 
