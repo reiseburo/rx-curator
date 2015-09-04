@@ -1,0 +1,6 @@
+= RxCurator
+
+NOTE: Consider this code beta quality until further notice
+
+RxCurator is intended to be a small reactive wrapper on top of the phenomenal
+link:http://curator.apache.org[Apache Curator] library.
