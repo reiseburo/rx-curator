@@ -44,7 +44,6 @@ public class PathChildren {
         return instance;
     }
 
-
     public Observable<PathChildrenCacheEvent> watch(final String znodePath) {
         return Observable.create(new Observable.OnSubscribe<PathChildrenCacheEvent>() {
             @Override
