@@ -50,11 +50,6 @@ public class PathChildren {
             @Override
             public void call(final Subscriber<? super PathChildrenCacheEvent> subscriber) {
                 cache = new PathChildrenCache(curatorFramework, znodePath, true);
-                try {
-                    cache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
-                } catch (Exception ex) {
-                    subscriber.onError(ex);
-                }
 
                 cache.getListenable().addListener(new PathChildrenCacheListener() {
                     @Override
@@ -62,6 +57,12 @@ public class PathChildren {
                         subscriber.onNext(event);
                     }
                 });
+
+                try {
+                    cache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+                } catch (Exception ex) {
+                    subscriber.onError(ex);
+                }
             }
         }).doOnUnsubscribe(new Action0() {
             @Override
